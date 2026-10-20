@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Reflux Guide" />
+  <title>Reflux Pocket Guide</title>
+  <style>
+    :root {
+      --bg: #F2F2F7;
+      --card: #FFFFFF;
+      --text: #1C1C1E;
+      --subtext: #6C6C70;
+      --border: #E5E5EA;
+      --accent: #007AFF;
+      --safe-bg: #E8F8EE;
+      --safe-text: #1E7E34;
+      --caution-bg: #FFF6E5;
+      --caution-text: #B26B00;
+      --avoid-bg: #FDEDED;
+      --avoid-text: #C92A2A;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #000000;
+        --card: #1C1C1E;
+        --text: #F2F2F7;
+        --subtext: #98989D;
+        --border: #2C2C2E;
+        --accent: #0A84FF;
+        --safe-bg: #0E311B;
+        --safe-text: #4CD964;
+        --caution-bg: #362407;
+        --caution-text: #FFCC00;
+        --avoid-bg: #381010;
+        --avoid-text: #FF453A;
+      }
+    }
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    body {
+      margin: 0;
+      padding: env(safe-area-inset-top) 0 calc(env(safe-area-inset-bottom) + 75px) 0;
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+    }
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      background: var(--bg);
+      padding: 16px 16px 10px;
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+    }
+    .header-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+    h1 {
+      font-size: 28px;
+      font-weight: 700;
+      margin: 0;
+      letter-spacing: -0.5px;
+    }
+    .SOS-btn {
+      background: var(--avoid-bg);
+      color: var(--avoid-text);
+      border: none;
+      padding: 7px 12px;
+      border-radius: 18px;
+      font-weight: 600;
+      font-size: 13px;
+      cursor: pointer;
+    }
+    .search-bar {
+      width: 100%;
+      padding: 10px 14px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: var(--card);
+      color: var(--text);
+      font-size: 16px;
+      margin-bottom: 10px;
+    }
+    .segmented-control {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      background: var(--border);
+      padding: 3px;
+      border-radius: 9px;
+      margin-bottom: 10px;
+    }
+    .seg-btn {
+      border: none;
+      background: transparent;
+      color: var(--text);
+      padding: 6px 4px;
+      font-size: 13px;
+      font-weight: 600;
+      border-radius: 7px;
+      cursor: pointer;
+    }
+    .seg-btn.active {
+      background: var(--card);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.12);
+    }
+    .cat-scroll {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding-bottom: 4px;
+      scrollbar-width: none;
+    }
+    .cat-scroll::-webkit-scrollbar { display: none; }
+    .cat-pill {
+      white-space: nowrap;
+      border: 1px solid var(--border);
+      background: var(--card);
+      color: var(--subtext);
+      padding: 6px 12px;
+      border-radius: 16px;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+    }
+    .cat-pill.active {
+      background: var(--accent);
+      color: #FFF;
+      border-color: var(--accent);
+    }
+    main { padding: 12px 16px; }
+    .food-card {
+      background: var(--card);
+      border-radius: 14px;
+      padding: 14px 16px;
+      margin-bottom: 10px;
+      border: 1px solid var(--border);
+    }
+    .card-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 8px;
+    }
+    .food-title {
+      font-size: 17px;
+      font-weight: 600;
+      margin: 0 0 4px 0;
+    }
+    .food-cat {
+      font-size: 12px;
+      color: var(--subtext);
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+    }
+    .badge {
+      font-size: 12px;
+      font-weight: 600;
+      padding: 4px 9px;
+      border-radius: 8px;
+      white-space: nowrap;
+    }
+    .badge.safe { background: var(--safe-bg); color: var(--safe-text); }
+    .badge.caution { background: var(--caution-bg); color: var(--caution-text); }
+    .badge.avoid { background: var(--avoid-bg); color: var(--avoid-text); }
+    .food-why {
+      font-size: 14px;
+      color: var(--subtext);
+      margin: 8px 0 0;
+      line-height: 1.4;
+    }
+    .food-tip {
+      font-size: 13px;
+      margin-top: 8px;
+      padding-top: 8px;
+      border-top: 1px dashed var(--border);
+      color: var(--text);
+    }
+    .modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.55);
+      z-index: 50;
+      align-items: flex-end;
+    }
+    .modal.open { display: flex; }
+    .modal-sheet {
+      background: var(--card);
+      width: 100%;
+      border-radius: 20px 20px 0 0;
+      padding: 20px 16px 34px;
+      max-height: 85vh;
+      overflow-y: auto;
+    }
+    .fab {
+      position: fixed;
+      bottom: calc(env(safe-area-inset-bottom) + 18px);
+      right: 18px;
+      background: var(--accent);
+      color: #FFF;
+      border: none;
+      width: 52px;
+      height: 52px;
+      border-radius: 26px;
+      font-size: 28px;
+      box-shadow: 0 4px 12px rgba(0,122,255,0.4);
+      cursor: pointer;
+      z-index: 30;
+    }
+    .form-row { margin-bottom: 12px; }
+    .form-row label { display: block; font-size: 13px; color: var(--subtext); margin-bottom: 4px; }
+    .form-row input, .form-row select, .form-row textarea {
+      width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border);
+      background: var(--bg); color: var(--text); font-size: 15px;
+    }
+    .primary-btn {
+      width: 100%; background: var(--accent); color: #FFF; border: none;
+      padding: 12px; border-radius: 10px; font-size: 16px; font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="header-top">
+    <h1>Reflux Guide</h1>
+    <button class="SOS-btn" onclick="toggleSOS(true)">Flare-Up SOS</button>
+  </div>
+  <input type="search" id="searchInput" class="search-bar" placeholder="Search foods, dishes, ingredients..." oninput="render()" />
+  <div class="segmented-control">
+    <button class="seg-btn active" onclick="setStatus('all', this)">All</button>
+    <button class="seg-btn" onclick="setStatus('safe', this)">Have</button>
+    <button class="seg-btn" onclick="setStatus('caution', this)">Modify</button>
+    <button class="seg-btn" onclick="setStatus('avoid', this)">Avoid</button>
+  </div>
+  <div class="cat-scroll" id="catContainer"></div>
+</header>
+
+<main id="foodList"></main>
+
+<button class="fab" onclick="toggleAdd(true)" aria-label="Add custom food">+</button>
+
+<!-- SOS Modal -->
+<div class="modal" id="sosModal" onclick="if(event.target===this)toggleSOS(false)">
+  <div class="modal-sheet">
+    <h2 style="margin-top:0">Nighttime Flare-Up Checklist</h2>
+    <ol style="line-height:1.6; padding-left:20px; font-size:15px;">
+      <li><strong>Sit Upright Immediately:</strong> Let gravity pull acid down from your esophagus.</li>
+      <li><strong>Loosen Waistbands:</strong> Remove any abdominal pressure.</li>
+      <li><strong>Sip Lukewarm Water:</strong> Small sips wash pepsin and acid downward. Do not chug cold water.</li>
+      <li><strong>Take an Antacid/Alginate:</strong> Use Tums (calcium carbonate) or Gaviscon for rapid neutralization.</li>
+      <li><strong>Sleep on Your Left Side:</strong> Keeps the stomach-esophageal junction above the pool of gastric acid.</li>
+    </ol>
+    <button class="primary-btn" onclick="toggleSOS(false)">Close</button>
+  </div>
+</div>
+
+<!-- Add Custom Food Modal -->
+<div class="modal" id="addModal" onclick="if(event.target===this)toggleAdd(false)">
+  <div class="modal-sheet">
+    <h2 style="margin-top:0">Add Custom Food</h2>
+    <div class="form-row">
+      <label>Food or Dish Name</label>
+      <input type="text" id="newTitle" placeholder="e.g., Chicken Pad See Ew" />
+    </div>
+    <div class="form-row">
+      <label>Category</label>
+      <select id="newCat">
+        <option>Breakfast</option>
+        <option>Proteins & Mains</option>
+        <option>Grains & Noodles</option>
+        <option>Fruits & Veggies</option>
+        <option>Takeout & Spices</option>
+        <option>Drinks & Snacks</option>
+      </select>
+    </div>
+    <div class="form-row">
+      <label>Status</label>
+      <select id="newStatus">
+        <option value="safe">Have (Safe)</option>
+        <option value="caution">Modify (Caution)</option>
+        <option value="avoid">Avoid (Trigger)</option>
+      </select>
+    </div>
+    <div class="form-row">
+      <label>Why / Personal Note</label>
+      <textarea id="newWhy" rows="2" placeholder="How does your stomach react?"></textarea>
+    </div>
+    <div class="form-row">
+      <label>Best Swap or Ordering Tip</label>
+      <input type="text" id="newTip" placeholder="e.g., Ask for no chili oil and light sauce" />
+    </div>
+    <button class="primary-btn" onclick="saveNewFood()">Save to My Phone</button>
+  </div>
+</div>
+
+<script>
+const DEFAULT_FOODS = [
+  { title: "Mush Overnight Oats (Plain/Vanilla/Berry)", cat: "Breakfast", status: "safe", why: "High soluble fiber absorbs stomach acid; dairy-free base prevents acid rebound.", tip: "Let sit 15 mins out of the fridge so it isn't ice cold; skip dark chocolate or coffee flavors." },
+  { title: "Bob's Red Mill Muesli (Old Country Style)", cat: "Breakfast", status: "safe", why: "Uses low-acid dates and raisins with soothing flaxseed and whole grains.", tip: "Cook warm or soak overnight in almond/oat milk so raw nuts and grains don't scratch your throat." },
+  { title: "Bob's Red Mill Gluten-Free Muesli", cat: "Breakfast", status: "caution", why: "Oat and brown rice base is gentle, but contains acidic dried cranberries and coconut.", tip: "Pick out the dried cranberries during an active flare-up and soak/cook thoroughly." },
+  { title: "Bananas & Melons", cat: "Fruits & Veggies", status: "safe", why: "Alkaline fruits (pH 5.6–6.1) that coat and soothe irritated esophageal tissue.", tip: "Slice onto oats or muesli, or eat as an afternoon buffer snack." },
+  { title: "Eggs (Poached, Boiled, or Egg Whites)", cat: "Breakfast", status: "safe", why: "Lean protein tightens the lower esophageal sphincter (LES) without slowing digestion.", tip: "Go lighter on yolks and butter when recovering from a flare-up." },
+  { title: "Coffee / Espresso", cat: "Drinks & Snacks", status: "avoid", why: "Caffeine relaxes the LES valve while chlorogenic acids trigger hydrochloric acid production.", tip: "Never drink on an empty stomach. Eat oats first, or use low-acid dark roast / cold brew with oat milk." },
+  { title: "Cow's Milk (Whole / 2%)", cat: "Drinks & Snacks", status: "caution", why: "Fat delays stomach emptying; calcium and casein trigger rebound acid 30–60 mins later.", tip: "Swap to unsweetened almond milk or oat milk." },
+  { title: "Kellogg's / Cake Protein Bars", cat: "Drinks & Snacks", status: "caution", why: "Chocolate coatings contain LES-relaxing theobromine; sugar alcohols cause gas pressure.", tip: "Stick to vanilla, peanut butter, or berry bars with under 6g fat and no cocoa coating." },
+  { title: "Grilled Chicken, Turkey, Tofu & Fish", cat: "Proteins & Mains", status: "safe", why: "High protein strengthens LES pressure and clears the stomach rapidly before bedtime.", tip: "Choose grilled, baked, or poached over crispy/fried." },
+  { title: "Tandoori Chicken (Mild)", cat: "Takeout & Spices", status: "caution", why: "Roasted lean protein is great for reflux, provided the marinade isn't loaded with cayenne/chili.", tip: "Order mild, skip the raw onion garnish, and pair with plain basmati rice or plain roti." },
+  { title: "Rich Chicken Curry (Butter/Tikka Masala)", cat: "Takeout & Spices", status: "avoid", why: "Combines three top triggers: acidic tomato base, heavy cream/ghee fat, and chili/garam masala.", tip: "Opt for mild yogurt/turmeric-based dishes, dal tadka (without chili temper), or grilled skewers." },
+  { title: "Stir-Fried Rice Noodles (Pad See Ew)", cat: "Grains & Noodles", status: "caution", why: "Flat rice noodles and bok choy/broccoli are easy to digest, if not swimming in oil or chili.", tip: "Request light oil, zero chili flakes/vinegar, and extra steamed greens." },
+  { title: "Spicy Thai Curries & Drunken Noodles", cat: "Takeout & Spices", status: "avoid", why: "High-fat coconut milk slows gastric emptying while bird's eye chilies activate esophageal pain nerves.", tip: "Choose clear ginger/lemongrass broths (without chili oil) or mild basil stir-fries with tofu/chicken." },
+  { title: "Jasmine, Basmati & Brown Rice", cat: "Grains & Noodles", status: "safe", why: "Starchy complex carbs absorb excess gastric liquid and soothe the stomach.", tip: "Keep as your primary dinner base at least 3 hours before sleep." },
+  { title: "Broccoli, Bok Choy, Spinach & Zucchini", cat: "Fruits & Veggies", status: "safe", why: "Naturally alkaline, low-sugar vegetables that reduce stomach acidity.", tip: "Steam or lightly sauté in minimal olive oil with ginger and herbs." },
+  { title: "Raw Onions, Raw Garlic & Tomatoes", cat: "Fruits & Veggies", status: "avoid", why: "Relax the LES muscle, ferment rapidly to create upward gas pressure, and re-activate throat pepsin.", tip: "Use ginger, turmeric, cumin, basil, or oregano for flavor instead." },
+  { title: "Ginger Tea & Alkaline Water", cat: "Drinks & Snacks", status: "safe", why: "Ginger acts as a natural prokinetic (speeds stomach emptying); alkaline water neutralizes pepsin.", tip: "Sip warm ginger tea after meals to help food move quickly out of the stomach." },
+  { title: "Sparkling Water, Soda & Alcohol", cat: "Drinks & Snacks", status: "avoid", why: "Carbonation expands the stomach mechanically, forcing the LES open; alcohol chemically relaxes it.", tip: "Stick to still water or herbal infusions, especially in the evening." }
+];
+
+let foods = JSON.parse(localStorage.getItem("reflux_foods_v1")) || DEFAULT_FOODS;
+let currentStatus = "all";
+let currentCat = "All";
+
+const categories = ["All", "Breakfast", "Proteins & Mains", "Grains & Noodles", "Fruits & Veggies", "Takeout & Spices", "Drinks & Snacks"];
+
+function initCategories() {
+  const container = document.getElementById("catContainer");
+  container.innerHTML = categories.map(c =>
+    `<button class="cat-pill ${c === currentCat ? 'active' : ''}" onclick="setCat('${c}')">${c}</button>`
+  ).join("");
+}
+
+function setStatus(status, btn) {
+  currentStatus = status;
+  document.querySelectorAll(".seg-btn").forEach(b => b.classList.remove("active"));
+  btn.classList.add("active");
+  render();
+}
+
+function setCat(cat) {
+  currentCat = cat;
+  initCategories();
+  render();
+}
+
+function badgeLabel(status) {
+  if (status === "safe") return "HAVE";
+  if (status === "caution") return "MODIFY";
+  return "AVOID";
+}
+
+function render() {
+  const q = document.getElementById("searchInput").value.toLowerCase();
+  const list = document.getElementById("foodList");
+  const filtered = foods.filter(f => {
+    const matchStatus = currentStatus === "all" || f.status === currentStatus;
+    const matchCat = currentCat === "All" || f.cat === currentCat;
+    const matchQ = f.title.toLowerCase().includes(q) || f.why.toLowerCase().includes(q) || f.tip.toLowerCase().includes(q);
+    return matchStatus && matchCat && matchQ;
+  });
+
+  if (!filtered.length) {
+    list.innerHTML = `<p style="text-align:center;color:var(--subtext);margin-top:40px;">No matching items found. Tap + to add one!</p>`;
+    return;
+  }
+
+  list.innerHTML = filtered.map(f => `
+    <div class="food-card">
+      <div class="card-top">
+        <div>
+          <div class="food-cat">${f.cat}</div>
+          <h3 class="food-title">${f.title}</h3>
+        </div>
+        <span class="badge ${f.status}">${badgeLabel(f.status)}</span>
+      </div>
+      <p class="food-why">${f.why}</p>
+      <div class="food-tip"><strong>Tip / Swap:</strong> ${f.tip}</div>
+    </div>
+  `).join("");
+}
+
+function toggleSOS(show) {
+  document.getElementById("sosModal").classList.toggle("open", show);
+}
+
+function toggleAdd(show) {
+  document.getElementById("addModal").classList.toggle("open", show);
+}
+
+function saveNewFood() {
+  const title = document.getElementById("newTitle").value.trim();
+  if (!title) return;
+  const item = {
+    title,
+    cat: document.getElementById("newCat").value,
+    status: document.getElementById("newStatus").value,
+    why: document.getElementById("newWhy").value.trim() || "Custom personal entry.",
+    tip: document.getElementById("newTip").value.trim() || "Monitor tolerance."
+  };
+  foods.unshift(item);
+  localStorage.setItem("reflux_foods_v1", JSON.stringify(foods));
+  document.getElementById("newTitle").value = "";
+  document.getElementById("newWhy").value = "";
+  document.getElementById("newTip").value = "";
+  toggleAdd(false);
+  render();
+}
+
+initCategories();
+render();
+</script>
+</body>
+</html>
